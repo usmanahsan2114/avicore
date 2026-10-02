@@ -1,0 +1,66 @@
+<!--
+  AviCore <head> TEMPLATE — copy into each page and replace the {{PLACEHOLDERS}}.
+  Keep the CSS/JS order identical to index.html. Per-page JSON-LD (Product,
+  FAQPage, BreadcrumbList) goes where {{PAGE_JSONLD}} is marked; keep the
+  Organization block on every page.
+-->
+<head>
+    <meta charset="utf-8">
+    <title>{{TITLE}}</title>
+    <meta name="author" content="AviCore Simulation Technologies">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{DESCRIPTION}}">
+    <meta name="keywords" content="{{KEYWORDS}}">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical & Open Graph / Social (TODO: update domain when final) -->
+    <link rel="canonical" href="https://www.avicoresim.com/{{SLUG}}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AviCore Simulation Technologies">
+    <meta property="og:title" content="{{TITLE}}">
+    <meta property="og:description" content="{{DESCRIPTION}}">
+    <meta property="og:url" content="https://www.avicoresim.com/{{SLUG}}">
+    <meta property="og:image" content="https://www.avicoresim.com/assets/images/logo/logo.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{TITLE}}">
+    <meta name="twitter:description" content="{{DESCRIPTION}}">
+
+    <!-- font -->
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <!-- css -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/slick.theme.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+    <!-- AviCore custom styles (loaded after template styles) -->
+    <link rel="stylesheet" type="text/css" href="assets/css/avicore.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="assets/images/logo/favicon.svg">
+    <link rel="apple-touch-icon-precomposed" href="assets/images/logo/favicon.svg">
+
+    <!-- JSON-LD: Organization (keep on every page) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "AviCore Simulation Technologies",
+      "alternateName": "AviCore",
+      "url": "https://www.avicoresim.com",
+      "logo": "https://www.avicoresim.com/assets/images/logo/logo.svg",
+      "description": "Custom aviation simulation hardware and software — USB flight controls, 3D printed cockpit parts, avionics bezels, simulator panels, IOS software and soft gauges.",
+      "foundingLocation": "Pakistan",
+      "areaServed": "Worldwide",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@avicoresim.com",
+        "contactType": "customer support"
+      }
+    }
+    </script>
+    <!-- {{PAGE_JSONLD}} — add Product / FAQPage / BreadcrumbList blocks here as needed -->
+</head>

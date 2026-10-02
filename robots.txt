@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /storage/
+Disallow: /tmp/
+Disallow: /tools/
+Disallow: /aigocy/
+Disallow: /__MACOSX/
+Sitemap: https://www.fsdcpak.com/avicore/sitemap.xml

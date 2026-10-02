@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<!--[if IE 8]><html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>Planning a Compact Simulator Module | AviCore Guide</title>
+    <meta name="author" content="AviCore Simulation Technologies">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AviCore flight-simulation resource.">
+    <meta name="theme-color" content="#0B1219">
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/slick.theme.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/avicore.css">
+    <link rel="stylesheet" href="assets/css/avicore-surfaces.css">
+    <link rel="shortcut icon" href="assets/images/logo/avicore-favicon.svg">
+    <link rel="apple-touch-icon-precomposed" href="assets/images/logo/avicore-favicon.svg">
+    <link rel="canonical" href="https://www.fsdcpak.com/avicore/blog-single.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AviCore Simulation Technologies">
+    <meta property="og:title" content="Planning a Compact Simulator Module | AviCore Guide">
+    <meta property="og:description" content="AviCore flight-simulation resource.">
+    <meta property="og:url" content="https://www.fsdcpak.com/avicore/blog-single.html">
+    <meta property="og:image" content="https://www.fsdcpak.com/avicore/assets/images/stock/aerospace-engineering-photo-1515272751348-.jpg">
+    <meta property="og:image:alt" content="AviCore custom USB flight controls for simulation use">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Planning a Compact Simulator Module | AviCore Guide">
+    <meta name="twitter:description" content="AviCore flight-simulation resource.">
+    <meta name="twitter:image" content="https://www.fsdcpak.com/avicore/assets/images/stock/aerospace-engineering-photo-1515272751348-.jpg">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "url": "https://www.fsdcpak.com/avicore/blog-single.html",
+          "name": "Planning a Compact Simulator Module | AviCore Guide",
+          "description": "AviCore flight-simulation resource.",
+          "isPartOf": {
+            "@id": "https://www.fsdcpak.com/avicore/#website"
+          },
+          "publisher": {
+            "@id": "https://www.fsdcpak.com/avicore/#organization"
+          }
+        }
+      ]
+    }
+    </script>
+</head>
+
+<body class="" id="top">
+    <canvas class="cursor-trail" id="trail" style="display: none;"></canvas>
+
+    <!-- Scroll Top -->
+    <button id="goTop">
+        <span class="border-progress"></span>
+        <span class="ic-wrap">
+            <span class="icon icon-long-arrow-alt-up-solid"></span>
+        </span>
+    </button>
+    <!-- /Scroll Top -->
+
+    <!-- #wrapper -->
+    <main id="wrapper"><nav class="sr-only" aria-label="Primary navigation"><a href="index.html">Home</a></nav>
+
+        <!-- Header -->
+        </div>
+        <header class="tf-header header2">
+            <div class="header-inner">
+                <a href="index.html" class="logo-site avicore-logo" aria-label="AviCore Simulation Technologies — Home">
+                    <span class="avicore-mark">Avi<span class="avicore-mark-accent">Core</span></span>
+                </a>
+                <div class="box-navigation" role="navigation" aria-label="Primary navigation">
+                    <ul class="nav-menu-main">
+
+                        <li class="menu-item">
+                            <a href="index.html" class="item-link link1 active">Home</a>
+                        </li>
+                        <li class="menu-item has-child">
+                            <a href="products.html" class="item-link link1">Products</a>
+                            <ul class="sub-menu">
+                                <li class="sub-menu-item"><a href="products.html" class="item-link link1">All Products</a></li>
+                                <li class="sub-menu-item"><a href="usb-flight-controls.html" class="item-link link1">USB Flight Controls</a></li>
+                                <li class="sub-menu-item"><a href="custom-joystick.html" class="item-link link1">Custom Joystick</a></li>
+                                <li class="sub-menu-item"><a href="printed-parts.html" class="item-link link1">3D Printed Cockpit Parts</a></li>
+                                <li class="sub-menu-item"><a href="avionics-bezels.html" class="item-link link1">Avionics Bezels</a></li>
+                                <li class="sub-menu-item"><a href="cockpit-panels.html" class="item-link link1">Simulator Panels</a></li>
+                                <li class="sub-menu-item"><a href="ios-software.html" class="item-link link1">IOS &amp; Instructor Station</a></li>
+                                <li class="sub-menu-item"><a href="soft-gauges.html" class="item-link link1">Soft Gauges</a></li><li class="sub-menu-item"><a href="airport-scenery-design.html" class="item-link link1">Airport &amp; Scenery Design</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item has-child">
+                            <a href="solutions.html" class="item-link link1">Solutions</a>
+                            <ul class="sub-menu">
+                                <li class="sub-menu-item"><a href="solutions.html" class="item-link link1">All Solutions</a></li>
+                                <li class="sub-menu-item"><a href="flight-schools.html" class="item-link link1">Flight Schools</a></li>
+                                <li class="sub-menu-item"><a href="simulator-builders.html" class="item-link link1">Simulator Builders</a></li>
+                                <li class="sub-menu-item"><a href="defense-training.html" class="item-link link1">Defense Training</a></li>
+                                <li class="sub-menu-item"><a href="universities.html" class="item-link link1">Universities &amp; Institutes</a></li>
+                                <li class="sub-menu-item"><a href="maintenance-training.html" class="item-link link1">Maintenance Training</a></li>
+                                <li class="sub-menu-item"><a href="hobbyists.html" class="item-link link1">Home Cockpit Builders</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item">
+                            <a href="enterprise.html" class="item-link link1">Enterprise</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="capabilities.html" class="item-link link1">Capabilities</a>
+                        </li>
+                        <li class="menu-item has-child">
+                            <a href="work.html" class="item-link link1">Works</a>
+                            <ul class="sub-menu">
+                                <li class="sub-menu-item"><a href="work.html" class="item-link link1">Works</a></li>
+                                <li class="sub-menu-item"><a href="work-single.html" class="item-link link1">Case Study</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item has-child">
+                            <a href="faq.html" class="item-link link1">Resources</a>
+                            <ul class="sub-menu">
+                                <li class="sub-menu-item"><a href="blog-standard.html" class="item-link link1">Blog</a></li>
+                                <li class="sub-menu-item"><a href="downloads.html" class="item-link link1">Downloads</a></li>
+                                <li class="sub-menu-item"><a href="faq.html" class="item-link link1">FAQ</a></li>
+                                <li class="sub-menu-item"><a href="support.html" class="item-link link1">Support</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item has-child">
+                            <a href="about.html" class="item-link link1">Company</a>
+                            <ul class="sub-menu">
+                                <li class="sub-menu-item"><a href="about.html" class="item-link link1">About</a></li>
+                                <li class="sub-menu-item"><a href="contact.html" class="item-link link1">Contact</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <a href="quote.html" class="tf-btn d-lg-flex d-none">
+                    Request a Quote
+                </a>
+                <button type="button" class="tf-btn open-mb-menu mobile-menu d-lg-none d-flex" aria-expanded="false" aria-controls="avicore-mobile-navigation" aria-label="Open navigation"><i class="icon icon-grip-lines-solid" aria-hidden="true"></i></button>
+            </div>
+        </header>
+        <!-- /Header -->
+        <!-- page-title -->
+        <div class="section-page-title surface-light">
+            <div class="container text-center">
+                <h1 class="page-title fw-semibold effectFade fadeZoom">Planning a Compact Simulator Module</h1>
+                <div class="breadcrumbs effectFade fadeUp">
+                    <a href="index.html" class="link1">Home</a>
+                    <div>/</div>
+                    <div>Blog</div>
+                </div>
+            </div>
+        </div>
+        <!-- /page-title -->
+        <!-- Blog With Sidebar -->
+        <section class="section-blog flat-spacing surface-dark">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-lg-7">
+                        <div class="blog-single-wrap">
+                            <div class="image effectFade fadeZoom">
+                                <img loading="lazy" width="1588" height="1120" src="assets/images/generated/simulator-builder-integration.jpg" alt="Simulator builder integrating a control module">
+                            </div>
+                            <div class="meta-list">
+                                <div class="meta-item">
+                                    <i class="icon icon-user-solid"></i>
+                                    <a href="about.html" class="link ">AviCore Engineering</a>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="icon icon-clock-solid"></i>
+                                    <span class="link">Guide preview</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="icon icon-clock-solid"></i>
+                                    <span class="">6 minute read</span>
+                                </div>
+                            </div>
+                            <p class="text-body-2">
+                                A compact simulator module works best when it begins with a training task, not a shopping list. Decide what the operator must see, touch and practise. Then identify the smallest set of controls, displays and software functions needed to support that task.
+                                <br>
+                                <br>
+                                A useful brief includes the aircraft or panel reference, target simulator, required axes and switches, approximate dimensions, mounting limits, display size, available power and preferred interface. Photos and drawings help, but uncertain details should be labelled rather than guessed.
+                                <br>
+                            </p>
+                            <div class="blockquote-wrap">
+                                <h5 class="fw-medium text-white">“ Define the training task first. Every control, display and software dependency should earn its place in the module. ”
+                                </h5>
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M44.375 70.4063V41.0938C44.375 33.0729 47.0729 26.3646 52.4687 20.9688C58.0104 15.4271 65.5208 11.6354 75 9.59375V29.0625C71.3542 30.2292 68.9479 31.6875 67.7812 33.4375C66.6146 35.0417 65.9583 37.0833 65.8125 39.5625H75V70.4063H44.375ZM5 70.4063V41.0938C5 33.0729 7.69792 26.3646 13.0938 20.9688C18.6354 15.4271 26.1458 11.6354 35.625 9.59375V29.0625C32.125 30.2292 29.7187 31.6875 28.4062 33.4375C27.2396 35.0417 26.5833 37.0833 26.4375 39.5625H35.625V70.4063H5Z" fill="#27272A"/>
+                                </svg>
+                            </div>
+                            <p class="text-body-2">
+                                Compatibility should be proven early. Confirm how the target simulator exposes inputs and outputs, whether USB HID is sufficient, and where serial, network or platform-specific software is required. Document axis ranges, switch logic, startup behaviour and any software dependencies.
+                                <br>
+                                <br>
+                                Finally, define acceptance checks before manufacture: mechanical fit, control response, display readability, cable strain relief, restart behaviour and setup documentation. A module is ready when another operator can install, configure and test it without relying on undocumented knowledge.
+                            </p>
+                            <div class="entry-footer">
+                                <div class="tags-links">
+                                    <h6 class="text-body-1">Tags:</h6>
+                                    <div class="list-tags">
+                                        <a href="capabilities.html" class="tags-item fw-semibold">Requirements</a>
+                                        <a href="support.html" class="tags-item fw-semibold">Compatibility</a>
+                                        <a href="products.html" class="tags-item fw-semibold">Simulator modules</a>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-12">
+                                    <h6 class="text-body-1">Share:</h6>
+                                    <div class="tf-social justify-content-center">
+                                        <a href="https://x.com/intent/post?url=https%3A%2F%2Fwww.fsdcpak.com%2Favicore%2Fblog-single.html" target="_blank" rel="noopener noreferrer" class="social-item" aria-label="Share this article on X">
+                                            <i class="icon icon-twitter-x"></i>
+                                        </a>
+                                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.fsdcpak.com%2Favicore%2Fblog-single.html" target="_blank" rel="noopener noreferrer" class="social-item" aria-label="Share this article on LinkedIn">
+                                            <i class="icon icon-linkedin-in"></i>
+                                        </a>
+                                        <a href="mailto:info@fsdcpak.com?subject=AviCore%20guide%20question" class="social-item" aria-label="Email AviCore about this guide">
+                                            <i class="icon icon-envelope-solid"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="post-comment" id="post-comment">
+                                <h4 class="heading fw-semibold">Planning your own module?</h4>
+                                <p class="text text-body-1">Send the aircraft reference, simulator platform, intended use and approximate dimensions. We will confirm what can be scoped and what still needs evidence.</p>
+                                <a href="quote.html" class="tf-btn w-100">Request a Quote</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="blog-sidebar m-lg-0">
+                            <div class="sidebar-item effectFade fadeUp no-div">
+                                <h5 class="sidebar-title">Need a technical answer?</h5>
+                                <p class="text-body-3 text-white-64 mb-20">Check compatibility, product scope and the information needed for a useful engineering brief.</p>
+                                <a href="faq.html" class="tf-btn-2">Open the FAQ <i class="icon icon-arrow-top-right"></i></a>
+                            </div>
+                            <div class="sidebar-item effectFade fadeUp no-div">
+                                <h5 class="sidebar-title">
+                                    Recent posts
+                                </h5>
+                                <div class="list-relatest-post">
+                                    <div class="relatest-post-item">
+                                        <div class="image">
+                                            <img loading="lazy" width="1554" height="1120" src="assets/images/stock/3d-printing-photo-1611505908502-.jpg" alt="3d printing — illustrative reference for simulation and training use">
+                                        </div>
+                                        <div class="content">
+                                            <h6 class="title text-body-1">
+                                                <a href="blog-single.html" class="link1">
+                                                    Choosing USB Controls
+                                                </a>
+                                            </h6>
+                                            <p class="time text-body-3 text-white-64">Guide preview</p>
+                                        </div>
+                                    </div>
+                                    <div class="relatest-post-item">
+                                        <div class="image">
+                                            <img loading="lazy" width="1554" height="1120" src="assets/images/stock/3d-printing-photo-1638959492386-.jpg" alt="3d printing — illustrative reference for simulation and training use">
+                                        </div>
+                                        <div class="content">
+                                            <h6 class="title text-body-1">
+                                                <a href="blog-single.html" class="link1">
+                                                    Writing a Joystick Brief
+                                                </a>
+                                            </h6>
+                                            <p class="time text-body-3 text-white-64">Guide preview</p>
+                                        </div>
+                                    </div>
+                                    <div class="relatest-post-item">
+                                        <div class="image">
+                                            <img loading="lazy" width="1554" height="1120" src="assets/images/stock/3d-printing-photo-1642969164999-.jpg" alt="3d printing — illustrative reference for simulation and training use">
+                                        </div>
+                                        <div class="content">
+                                            <h6 class="title text-body-1">
+                                                <a href="blog-single.html" class="link1">
+                                                    Planning a Panel Bezel
+                                                </a>
+                                            </h6>
+                                            <p class="time text-body-3 text-white-64">Guide preview</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sidebar-item effectFade fadeUp no-div">
+                                <h5 class="sidebar-title">
+                                    Category
+                                </h5>
+                                <div class="sidebar-categories">
+                                    <div class="item">
+                                        <a href="products.html" class="text-body-1 link1">Flight Controls</a>
+                                        <span class="text-body-3 text-white-64">(4)</span>
+                                    </div>
+                                    <div class="item">
+                                        <a href="capabilities.html" class="text-body-1 link1">Panel Design</a>
+                                        <span class="text-body-3 text-white-64">(2)</span>
+                                    </div>
+                                    <div class="item">
+                                        <a href="support.html" class="text-body-1 link1">Integration</a>
+                                        <span class="text-body-3 text-white-64">(1)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sidebar-item effectFade fadeUp no-div">
+                                <h5 class="sidebar-title">
+                                    Popular tag
+                                </h5>
+                                <div class="list-tags">
+                                    <a href="usb-flight-controls.html" class="tags-item fw-semibold">USB controls</a>
+                                    <a href="custom-joystick.html" class="tags-item fw-semibold">Joystick design</a>
+                                    <a href="avionics-bezels.html" class="tags-item fw-semibold">Display bezels</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /Blog With Sidebar -->
+        <!-- footer -->
+        <footer>
+            <div class="footer-image">
+                <span class="footer-wordmark" aria-label="AviCore">AviCore</span>
+            </div>
+            <div class="container">
+                <div class="footer-content">
+                    <a href="index.html" class="footer-logo avicore-logo" aria-label="AviCore Simulation Technologies — Home">
+                        <span class="avicore-mark avicore-mark-lg">Avi<span class="avicore-mark-accent">Core</span></span>
+                    </a>
+                    <div class="title h6 fw-semibold">Connect with AviCore <br> through FSDC</div>
+                    <div class="text">Custom aviation simulation hardware &amp; software.</div>
+                    <div class="tf-social-1 justify-content-center avicore-contact-links">
+                        <a href="https://www.fsdcpak.com/" target="_blank" rel="noopener noreferrer" class="text-body-1 fw-semibold">
+                            FSDC Website
+                            <span class="social-item"><i class="icon icon-arrow-top-right" aria-hidden="true"></i></span>
+                        </a>
+                        <a href="mailto:info@fsdcpak.com" class="text-body-1 fw-semibold">
+                            Email
+                            <span class="social-item"><i class="icon icon-envelope" aria-hidden="true"></i></span>
+                        </a>
+                        <a href="tel:+92515177639" class="text-body-1 fw-semibold">
+                            Call
+                            <span class="social-item"><i class="icon icon-phone-solid" aria-hidden="true"></i></span>
+                        </a>
+                        <a href="contact.html" class="text-body-1 fw-semibold">
+                            Contact
+                            <span class="social-item"><i class="icon icon-arrow-top-right" aria-hidden="true"></i></span>
+                        </a>
+                    </div></div>
+                <!-- Simulation-use disclaimer -->
+                <div class="footer-disclaimer text-secondary text-body-3">
+                    <p>Products are intended for simulation, training, cockpit familiarization, prototyping and enthusiast use only. They are <strong>not</strong> certified aircraft parts and are not for installation in real aircraft.</p>
+                    <p>All trademarks belong to their respective owners. AviCore products are simulation-focused and not certified aircraft parts or official OEM products.</p>
+                </div>
+                <div class="footer-bottom">
+                    <ul class="footer-links d-flex gap-24 align-items-center flex-wrap">
+                        <li>
+                            <a href="products.html" class="fw-semibold link-underline link1">Products</a>
+                        </li>
+                        <li>
+                            <a href="solutions.html" class="fw-semibold link-underline link1">Solutions</a>
+                        </li>
+                        <li>
+                            <a href="about.html" class="fw-semibold link-underline link1">About</a>
+                        </li>
+                        <li>
+                            <a href="contact.html" class="fw-semibold link-underline link1">Contact</a>
+                        </li>
+                        <li>
+                            <a href="privacy.html" class="fw-semibold link-underline link1">Privacy</a>
+                        </li>
+                        <li>
+                            <a href="terms.html" class="fw-semibold link-underline link1">Terms</a>
+                        </li>
+                        <li>
+                            <a href="disclaimer.html" class="fw-semibold link-underline link1">Disclaimer</a>
+                        </li>
+                    </ul>
+                    <p class="text-secondary coppy-rights text-center">© 2026 AviCore Simulation Technologies. All Rights Reserved.</p>
+                    <a href="#top" class="action-go-top d-flex gap-8 align-items-center justify-content-end link1">
+                        <span class="fw-semibold">Back to top</span>
+                        <i class="icon icon-long-arrow-alt-up-solid fs-20"></i>
+                    </a>
+                </div>
+            </div>
+        </footer>
+        <!-- /footer -->
+<!-- Javascript -->
+<script src="assets/js/jquery.min.js" defer></script>
+<script src="assets/js/bootstrap.min.js" defer></script>
+<script src="assets/js/jquery.nice-select.min.js" defer></script>
+<script src="assets/js/swiper-bundle.min.js" defer></script>
+<script src="assets/js/slick.min.js" defer></script>
+<script src="assets/js/countto.js" defer></script>
+<script src="assets/js/carousel.js" defer></script>
+<script src="assets/js/infinityslide.js" defer></script>
+<script src="assets/js/ScrollSmooth.js" defer></script>
+<script src="assets/js/gsap.min.js" defer></script>
+<script src="assets/js/ScrollTrigger.min.js" defer></script>
+<script src="assets/js/ScrollToPlugin.min.js" defer></script>
+<script src="assets/js/gsapAnimation.js" defer></script>
+<script src="assets/js/main.js" defer></script>
+<script src="assets/js/avicore.js" defer></script>
+<script src="assets/js/storefront.js?v=20260728-2" defer></script>
+</body>
+</html>

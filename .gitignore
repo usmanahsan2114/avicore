@@ -1,0 +1,22 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+__MACOSX/
+*.log
+
+# Backups & Unused Quarantined Files
+_backup-*/
+_unused-assets/
+.last-backup
+
+# Temporary and build outputs
+tmp/
+dist/
+
+# Third-party raw template archive
+aigocy/
+
+# Runtime storage files
+storage/rate/*.json
+storage/inquiries/*
+!storage/inquiries/.gitkeep

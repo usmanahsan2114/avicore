@@ -1,0 +1,5 @@
+Require all denied
+
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>

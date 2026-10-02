@@ -1,0 +1,22 @@
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /avicore/404.html
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    <FilesMatch "\.(?:css|js|svg|webp|png|jpg|jpeg|woff2?)$">
+        Header set Cache-Control "public, max-age=604800, stale-while-revalidate=86400"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+RewriteEngine On
+RewriteRule ^(?:aigocy|__MACOSX|_partials|tools|tmp)(?:/|$) - [R=404,L]
+RewriteRule ^(?:avicore-research\.md|README-template\.md)$ - [R=404,L]
+RewriteRule ^index-v2\.html$ /avicore/index.html [R=301,L,NE]

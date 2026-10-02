@@ -1,0 +1,1293 @@
+/* ==========================================================================
+   AviCore — Surface band system
+   --------------------------------------------------------------------------
+   Loaded LAST on every page. Replaces legacy-avicore.css, which flipped the
+   page background to light while leaving storefront.css's light-on-dark text
+   tokens untouched (324 measured WCAG failures across 38 pages).
+
+   Model: a page is a stack of BANDS. Each band declares its own surface via
+   .surface-dark / .surface-light and re-points a single set of --s-* tokens.
+   Components read the tokens instead of hardcoding a colour, so the same
+   component is legible on either band.
+
+   Every pair below was verified with a contrast checker; ratios are noted
+   inline. Body text targets 4.5:1, large text / UI 3:1.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Surface token scopes
+   -------------------------------------------------------------------------- */
+/* The page itself is a dark band. Content that never got an explicit band
+   class still resolves the tokens instead of falling back to the light-page
+   literals baked into styles.css. Custom properties inherit, so any
+   .surface-light subtree below simply re-points them. */
+:root,
+.surface-dark {
+    --s-bg: #0B1219;
+    --s-raised: #111A23;
+    --s-raised-2: #16212C;
+    --s-text: #E9EEF3;        /* 16.1:1 on bg */
+    --s-muted: #A3B4C4;       /*  8.9:1 on bg */
+    --s-heading: #FFFFFF;     /* 18.8:1 on bg */
+    --s-accent: #FF5C4D;      /*  6.2:1 on bg */
+    --s-cyan: #35CCF5;        /* 10.0:1 on bg */
+    --s-amber: #FFBD59;       /* 11.4:1 on bg */
+    --s-ok: #5EE3A4;          /* 11.7:1 on bg */
+    --s-err: #FF7C86;         /*  7.6:1 on bg */
+    --s-line: rgba(255, 255, 255, .12);
+    --s-line-strong: rgba(255, 255, 255, .24);
+    --s-panel: rgba(255, 255, 255, .055);
+    --s-chip-bg: rgba(255, 255, 255, .07);
+    --s-shadow: 0 24px 60px rgba(0, 0, 0, .38);
+
+    background-color: var(--s-bg);
+    color: var(--s-text);
+    color-scheme: dark;
+}
+
+.surface-light {
+    --s-bg: #F2F4F6;
+    --s-raised: #FFFFFF;
+    --s-raised-2: #E9ECEF;
+    --s-text: #1A222B;        /* 14.6:1 on bg */
+    --s-muted: #586674;       /*  5.3:1 on bg */
+    --s-heading: #0C131A;     /* 17.0:1 on bg */
+    --s-accent: #C0281F;      /*  5.3:1 on bg, 5.9:1 on card */
+    --s-cyan: #0B6E8F;        /*  5.2:1 on bg */
+    --s-amber: #8A5A00;       /*  5.9:1 on card */
+    --s-ok: #0F7A4D;          /*  5.4:1 on card */
+    --s-err: #B3262F;         /*  6.5:1 on card */
+    --s-line: rgba(11, 18, 25, .12);
+    --s-line-strong: rgba(11, 18, 25, .24);
+    --s-panel: rgba(11, 18, 25, .04);
+    --s-chip-bg: rgba(11, 18, 25, .05);
+    --s-shadow: 0 16px 40px rgba(9, 12, 16, .10);
+
+    background-color: var(--s-bg);
+    color: var(--s-text);
+    color-scheme: light;
+}
+
+/* One primary button fill for both bands: #D8342A + #fff = 4.73:1 label,
+   and the fill clears 3:1 against dark (3.99:1) and light (4.29:1) bands. */
+:root {
+    --acc-btn: #D8342A;
+    --acc-btn-hover: #B02419;
+    --acc-btn-label: #FFFFFF;
+}
+
+/* Page shell defaults to the dark band so no gap shows between sections. */
+html,
+body {
+    background-color: #0B1219;
+    color: var(--s-text);
+}
+
+/* Content sitting outside any explicit band — service-single.html in
+   particular has blocks between its four banded sections — still carries
+   template colours tuned for a light page (#242a32, #000). Anchor those to
+   the page band. A .surface-* ancestor overrides these via the rules below. */
+main :where(h1, h2, h3, h4, h5, h6, .heading, .title):not([class*="text-brand"]) {
+    color: var(--s-heading);
+}
+
+main :where(p, li, .text, .desc, .sub):not([class*="text-brand"]) {
+    color: var(--s-text);
+}
+
+/* --------------------------------------------------------------------------
+   2. Band-aware typography (shared by both component sets)
+   -------------------------------------------------------------------------- */
+.surface-dark h1, .surface-dark h2, .surface-dark h3,
+.surface-dark h4, .surface-dark h5, .surface-dark h6,
+.surface-light h1, .surface-light h2, .surface-light h3,
+.surface-light h4, .surface-light h5, .surface-light h6 {
+    color: var(--s-heading);
+}
+
+.surface-dark p, .surface-light p,
+.surface-dark li, .surface-light li,
+.surface-dark dd, .surface-light dd,
+.surface-dark td, .surface-light td {
+    color: var(--s-text);
+}
+
+.surface-dark .lead, .surface-light .lead,
+.surface-dark .muted, .surface-light .muted,
+.surface-dark .small, .surface-light .small,
+.surface-dark .section-heading p, .surface-light .section-heading p,
+.surface-dark .legal, .surface-light .legal {
+    color: var(--s-muted);
+}
+
+.surface-dark .eyebrow, .surface-light .eyebrow,
+.surface-dark .card-kicker, .surface-light .card-kicker,
+.surface-dark .heading-sub, .surface-light .heading-sub,
+.surface-dark .text-brand, .surface-light .text-brand {
+    color: var(--s-accent);
+}
+
+.surface-dark a:not(.btn):not(.tf-btn):not(.tf-btn-2),
+.surface-light a:not(.btn):not(.tf-btn):not(.tf-btn-2) {
+    color: inherit;
+}
+
+.surface-dark .text-link, .surface-light .text-link {
+    color: var(--s-accent);
+}
+
+/* Gradient headings from the template resolve to a flat, legible colour on
+   whichever band they land on — the old gradients were tuned for one bg only. */
+.surface-dark .heading-title,
+.surface-dark .text-gradient-1,
+.surface-dark .text-gradient-2,
+.surface-dark .title1,
+.surface-dark .title2 {
+    color: var(--s-heading) !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: var(--s-heading) !important;
+}
+
+.surface-light .heading-title,
+.surface-light .text-gradient-1,
+.surface-light .text-gradient-2,
+.surface-light .title1,
+.surface-light .title2 {
+    color: var(--s-heading) !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: var(--s-heading) !important;
+}
+
+/* Template utility colour classes are band-relative now. */
+.surface-dark .text-secondary, .surface-light .text-secondary,
+.surface-dark .text-neutral-200, .surface-light .text-neutral-200,
+.surface-dark .text-neutral-300, .surface-light .text-neutral-300,
+.surface-dark .text-neutral-400, .surface-light .text-neutral-400,
+.surface-dark .section-intro, .surface-light .section-intro {
+    color: var(--s-muted) !important;
+}
+
+.surface-dark .text-white, .surface-light .text-white {
+    color: var(--s-heading) !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. Storefront components (products / audience / quote / legal pages)
+   -------------------------------------------------------------------------- */
+.surface-dark .section,
+.surface-light .section {
+    background: transparent;
+    color: var(--s-text);
+}
+
+/* .surface was "always white" — it now means "raised one step off the band". */
+.surface-dark.section.surface,
+.surface-light.section.surface {
+    background-color: var(--s-raised-2);
+}
+
+.surface-dark .product-card, .surface-light .product-card,
+.surface-dark .info-card, .surface-light .info-card,
+.surface-dark .audience-card, .surface-light .audience-card,
+.surface-dark .process-card, .surface-light .process-card,
+.surface-dark .form-card, .surface-light .form-card,
+.surface-dark .callout, .surface-light .callout,
+.surface-dark .faq-item, .surface-light .faq-item,
+.surface-dark .empty-state, .surface-light .empty-state,
+.surface-dark .audience-info-card, .surface-light .audience-info-card {
+    background-color: var(--s-raised);
+    border-color: var(--s-line);
+    color: var(--s-text);
+    box-shadow: var(--s-shadow);
+}
+
+.surface-dark .product-body p, .surface-light .product-body p,
+.surface-dark .info-card p, .surface-light .info-card p,
+.surface-dark .audience-card p, .surface-light .audience-card p,
+.surface-dark .process-card p, .surface-light .process-card p,
+.surface-dark .field-hint, .surface-light .field-hint,
+.surface-dark .filter-status, .surface-light .filter-status,
+.surface-dark .partner-label, .surface-light .partner-label,
+.surface-dark .image-note, .surface-light .image-note,
+.surface-dark .faq-answer, .surface-light .faq-answer {
+    color: var(--s-muted);
+}
+
+.surface-dark .product-media, .surface-light .product-media,
+.surface-dark .product-stage, .surface-light .product-stage,
+.surface-dark .hero-art, .surface-light .hero-art,
+.surface-dark .audience-stage, .surface-light .audience-stage {
+    background: var(--s-panel);
+    border-color: var(--s-line);
+}
+
+.surface-dark .chip, .surface-light .chip {
+    color: var(--s-text);
+    background-color: var(--s-chip-bg);
+    border-color: var(--s-line);
+}
+
+.surface-dark .chip-accent, .surface-light .chip-accent {
+    color: var(--s-accent);
+    border-color: currentColor;
+    background-color: transparent;
+}
+
+.surface-dark .list-check li, .surface-light .list-check li {
+    color: var(--s-text);
+}
+
+.surface-dark .list-check li::before,
+.surface-light .list-check li::before {
+    color: var(--acc-btn-label);
+    background-color: var(--acc-btn);
+}
+
+.surface-dark .spec-strip strong, .surface-light .spec-strip strong,
+.surface-dark .proof-item strong, .surface-light .proof-item strong {
+    color: var(--s-heading);
+}
+
+.surface-dark .spec-strip span, .surface-light .spec-strip span,
+.surface-dark .proof-item span, .surface-light .proof-item span {
+    color: var(--s-muted);
+}
+
+.surface-dark .spec-strip, .surface-light .spec-strip,
+.surface-dark .proof-grid, .surface-light .proof-grid {
+    border-color: var(--s-line);
+}
+
+.surface-dark .step-number, .surface-light .step-number,
+.surface-dark .card-icon, .surface-light .card-icon {
+    color: var(--s-heading);
+    background-color: var(--acc-btn);
+}
+
+.surface-dark .note-box, .surface-light .note-box {
+    color: var(--s-text);
+    background-color: var(--s-panel);
+    border-color: var(--s-amber);
+}
+
+.surface-dark .note-box strong, .surface-light .note-box strong {
+    color: var(--s-amber);
+}
+
+.surface-dark .form-status.is-success, .surface-light .form-status.is-success { color: var(--s-ok); }
+.surface-dark .form-status.is-error, .surface-light .form-status.is-error { color: var(--s-err); }
+
+.surface-dark .field label, .surface-light .field label,
+.surface-dark .field-checkbox label, .surface-light .field-checkbox label {
+    color: var(--s-text);
+}
+
+.surface-dark .field input, .surface-light .field input,
+.surface-dark .field select, .surface-light .field select,
+.surface-dark .field textarea, .surface-light .field textarea,
+.surface-dark .form-card input, .surface-light .form-card input,
+.surface-dark .form-card select, .surface-light .form-card select,
+.surface-dark .form-card textarea, .surface-light .form-card textarea {
+    color: var(--s-text);
+    background-color: var(--s-raised-2);
+    border-color: var(--s-line-strong);
+}
+
+.surface-dark .field input::placeholder, .surface-light .field input::placeholder,
+.surface-dark .field textarea::placeholder, .surface-light .field textarea::placeholder,
+.surface-dark .form-card input::placeholder, .surface-light .form-card input::placeholder,
+.surface-dark .form-card textarea::placeholder, .surface-light .form-card textarea::placeholder {
+    color: var(--s-muted);
+    opacity: 1;
+}
+
+.surface-dark .filter-button, .surface-light .filter-button {
+    color: var(--s-text);
+    background-color: var(--s-chip-bg);
+    border-color: var(--s-line);
+}
+
+.surface-dark .filter-button[aria-pressed="true"],
+.surface-light .filter-button[aria-pressed="true"] {
+    color: var(--acc-btn-label);
+    background-color: var(--acc-btn);
+    border-color: var(--acc-btn);
+}
+
+.surface-dark .faq-item summary, .surface-light .faq-item summary {
+    color: var(--s-heading);
+}
+
+.surface-dark .faq-item summary::after,
+.surface-light .faq-item summary::after {
+    color: var(--s-accent);
+}
+
+/* --------------------------------------------------------------------------
+   4. Buttons — one treatment, legible on both bands
+   -------------------------------------------------------------------------- */
+.surface-dark .btn-primary, .surface-light .btn-primary,
+.surface-dark .tf-btn, .surface-light .tf-btn {
+    color: var(--acc-btn-label) !important;
+    background: var(--acc-btn) !important;
+    border-color: var(--acc-btn) !important;
+    box-shadow: none;
+}
+
+.surface-dark .btn-primary:hover, .surface-light .btn-primary:hover,
+.surface-dark .tf-btn:hover, .surface-light .tf-btn:hover {
+    background: var(--acc-btn-hover) !important;
+    border-color: var(--acc-btn-hover) !important;
+}
+
+.surface-dark .btn-secondary, .surface-light .btn-secondary,
+.surface-dark .tf-btn-2, .surface-light .tf-btn-2 {
+    color: var(--s-text) !important;
+    background: var(--s-panel) !important;
+    border: 1px solid var(--s-line-strong) !important;
+}
+
+.surface-dark .btn-secondary:hover, .surface-light .btn-secondary:hover,
+.surface-dark .tf-btn-2:hover, .surface-light .tf-btn-2:hover {
+    border-color: var(--s-accent) !important;
+    color: var(--s-accent) !important;
+}
+
+/* Launch-status badge — lived in legacy-avicore.css as .product-stage::before.
+   Kept here so removing the legacy file doesn't expose storefront.css's
+   decorative ring (which rendered as a large red disc over the product). */
+.product-stage::before {
+    content: attr(data-status);
+    position: absolute;
+    z-index: 8;
+    top: 18px;
+    right: 18px;
+    bottom: auto;
+    left: auto;
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    min-height: 34px;
+    aspect-ratio: auto;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 13px;
+    border: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 999px;
+    background: var(--acc-btn);
+    color: var(--acc-btn-label);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    box-shadow: 0 9px 24px rgba(0, 0, 0, .28);
+}
+
+/* Products that are actually shipping get a green badge instead of red. */
+.product-stage[data-status="Available"]::before,
+.product-stage[data-status="Available now"]::before {
+    background: #0F7A4D;                     /* white label = 5.0:1 */
+    border-color: rgba(255, 255, 255, .3);
+}
+
+/* Same distinction on the catalogue cards. */
+.product-status-badge.is-available {
+    background: #0F7A4D;
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, .3);
+}
+
+/* An "Available now" chip should read as a positive state, not an accent. */
+.surface-dark .chip-available,
+.surface-light .chip-available {
+    color: var(--s-ok);
+    border-color: currentColor;
+}
+
+.product-stage:not([data-status])::before {
+    content: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Footer — was unreadable on all 38 pages
+   --------------------------------------------------------------------------
+   styles.css positions footer .footer-image absolutely at top:0 (it held a
+   decorative photo in the original template). The build swapped in a 190px
+   white wordmark, which then painted straight through the footer text at
+   1.18:1. Pin it behind the content and tone it to a watermark.
+   -------------------------------------------------------------------------- */
+/* The footer sits outside the band stack, so it declares its own tokens —
+   otherwise classes that resolve var(--s-muted) fall back to the light-band
+   value and land at 3.5:1 on #09090B. */
+footer {
+    --s-bg: #09090B;
+    --s-raised: #14161A;
+    --s-text: #E9EEF3;
+    --s-muted: #B9C4CE;        /* 9.4:1 on #09090B */
+    --s-heading: #FFFFFF;
+    --s-accent: #FF7A6D;       /* 7.0:1 on #09090B */
+    --s-line: rgba(255, 255, 255, .12);
+
+    position: relative;
+    background-color: #09090B;
+    color: #E9EEF3;
+}
+
+/* Light panels that the template paints with --neutral-100 (#F4F4F5) can sit
+   inside a dark band; they re-scope to the light tokens so their text flips
+   with the panel rather than the band. */
+.surface-dark .sub-menu, .surface-light .sub-menu,
+.surface-dark .tf-social-1 a, .surface-light .tf-social-1 a,
+.surface-dark .form-contact, .surface-light .form-contact,
+.surface-dark .box-contact-item, .surface-light .box-contact-item,
+.surface-dark .accordion-asked-item, .surface-light .accordion-asked-item,
+.surface-dark .review-box, .surface-light .review-box,
+footer .sub-menu,
+footer .tf-social-1 a {
+    --s-bg: #F4F4F5;
+    --s-raised: #FFFFFF;
+    --s-text: #1A222B;
+    --s-muted: #586674;
+    --s-heading: #0C131A;
+    --s-accent: #C0281F;
+    --s-line: rgba(11, 18, 25, .12);
+    color: var(--s-text);
+}
+
+/* Descendants of those panels carry template classes that hardcode white. */
+.surface-dark .form-contact :where(h1,h2,h3,h4,h5,h6,label,p,.heading,.title,.text),
+.surface-light .form-contact :where(h1,h2,h3,h4,h5,h6,label,p,.heading,.title,.text),
+.surface-dark .box-contact-item :where(h1,h2,h3,h4,h5,h6,p,a,.title,.text),
+.surface-light .box-contact-item :where(h1,h2,h3,h4,h5,h6,p,a,.title,.text),
+.surface-dark .accordion-asked-item :where(.accordion-body,p,.text),
+.surface-light .accordion-asked-item :where(.accordion-body,p,.text) {
+    color: var(--s-text) !important;
+}
+
+.surface-dark .form-contact :where(h1,h2,h3,h4,h5,h6,.heading,.title),
+.surface-light .form-contact :where(h1,h2,h3,h4,h5,h6,.heading,.title),
+.surface-dark .box-contact-item :where(h1,h2,h3,h4,h5,h6,.title),
+.surface-light .box-contact-item :where(h1,h2,h3,h4,h5,h6,.title) {
+    color: var(--s-heading) !important;
+}
+
+/* .text is hardcoded white in the template; on a light band it vanishes.
+   The template selectors are (0,2,1), so these need !important rather than
+   :where() to win. */
+/* The guards are wrapped in :where() so they add no specificity — a bare
+   :not(.tf-btn):not(.btn) pushed this to (0,4,0) and started outranking the
+   button-label rule in section 10, re-inking button text to the band colour. */
+.surface-light .text:not(:where(.tf-btn, .btn)),
+.surface-light .text-body-1:not(:where(.tf-btn, .btn)),
+.surface-light .text-body-2:not(:where(.tf-btn, .btn)),
+.surface-light .text-body-3:not(:where(.tf-btn, .btn)),
+.surface-light .desc,
+.surface-light .sub,
+.surface-light .title,
+.surface-light .heading {
+    color: var(--s-text) !important;
+}
+
+/* ...but never re-ink a button label: the fill is the accent, so the label
+   must stay white regardless of which band or panel the button sits in. */
+.surface-light .tf-btn, .surface-dark .tf-btn,
+.surface-light .btn-primary, .surface-dark .btn-primary,
+.surface-light .tf-btn *, .surface-dark .tf-btn *,
+.surface-light .btn-primary *, .surface-dark .btn-primary * {
+    color: var(--acc-btn-label) !important;
+}
+
+.surface-light .num,
+.surface-light .text-secondary,
+.surface-light .text-neutral-200,
+.surface-light .text-neutral-300,
+.surface-light .text-neutral-400 {
+    color: var(--s-muted) !important;
+}
+
+/* Active state on the compatibility tabs used the old #f14444 (white = 3.7:1). */
+.compatibility-tab.is-active {
+    border-color: var(--acc-btn) !important;
+    background: var(--acc-btn) !important;
+    color: var(--acc-btn-label) !important;
+}
+
+/* Button labels are white on the accent fill; a nested span must not inherit
+   the band's ink colour. */
+.tf-btn :where(span, i),
+.btn-primary :where(span, i) {
+    color: var(--acc-btn-label) !important;
+}
+
+/* .text-link on a light band was still resolving the old accent. */
+.surface-light .text-link,
+.surface-light a.text-link {
+    color: var(--s-accent) !important;
+}
+
+/* The pre-launch badge used the old #f14444, which gives white only 3.7:1.
+   --acc-btn (#D8342A) takes it to 4.73:1. */
+.coming-soon-badge,
+.product-status-badge {
+    background: var(--acc-btn) !important;
+    color: var(--acc-btn-label) !important;
+}
+
+.product-status-badge.is-available {
+    background: #0F7A4D !important;
+}
+
+footer .footer-image {
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+}
+
+footer .footer-wordmark {
+    color: #FFFFFF;
+    opacity: .05;              /* watermark, not content */
+}
+
+footer .container {
+    position: relative;
+    z-index: 1;                /* content always above the watermark */
+}
+
+footer .footer-content .title,
+footer .footer-content .avicore-mark {
+    color: #FFFFFF;
+}
+
+footer .footer-content .text,
+footer .footer-disclaimer,
+footer .footer-disclaimer p {
+    color: #B9C4CE;            /* 9.4:1 on #09090B */
+}
+
+footer .footer-links a,
+footer .footer-bottom a,
+footer .coppy-rights {
+    color: #C6D0D9;            /* 11.0:1 on #09090B */
+}
+
+footer .footer-links a:hover,
+footer .footer-bottom a:hover {
+    color: var(--acc-btn-label);
+}
+
+/* The contact pills use the template's .tf-social-1 a, whose fill is
+   var(--neutral-100) — a LIGHT pill. Inheriting the footer's light text made
+   the labels white-on-white, so they get dark ink explicitly. The inner
+   .social-item disc stays #272727, so its icon stays white. */
+footer .avicore-contact-links a,
+footer .tf-social-1 a {
+    color: #0C131A;            /* 17.9:1 on the light pill */
+}
+
+footer .avicore-contact-links a:hover,
+footer .tf-social-1 a:hover {
+    color: var(--acc-btn-hover);
+}
+
+footer .avicore-contact-links a .social-item,
+footer .tf-social-1 a .social-item {
+    color: #FFFFFF;
+}
+
+/* Contact row: icon-envelope and icon-phone-solid do not exist in the icomoon
+   set (32 icons referenced, 87 available, these 2 absent) so they rendered as
+   solid black discs. Draw them as CSS masks instead of relying on the font. */
+footer .avicore-contact-links .social-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+}
+
+footer .avicore-contact-links .icon-envelope,
+footer .avicore-contact-links .icon-phone-solid {
+    width: 15px;
+    height: 15px;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+footer .avicore-contact-links .icon-envelope {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.5 7.8 5.9L19.8 6H4.2ZM20 7.7l-7.4 5.6a1 1 0 0 1-1.2 0L4 7.7V18h16V7.7Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.5 7.8 5.9L19.8 6H4.2ZM20 7.7l-7.4 5.6a1 1 0 0 1-1.2 0L4 7.7V18h16V7.7Z'/%3E%3C/svg%3E");
+}
+
+footer .avicore-contact-links .icon-phone-solid {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M6.6 2h3a1 1 0 0 1 1 .8l.8 3.6a1 1 0 0 1-.5 1.1L9.2 8.6a13.5 13.5 0 0 0 6.2 6.2l1.1-1.7a1 1 0 0 1 1.1-.5l3.6.8a1 1 0 0 1 .8 1v3a2 2 0 0 1-2.2 2A18.6 18.6 0 0 1 2.6 4.2 2 2 0 0 1 4.6 2h2Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M6.6 2h3a1 1 0 0 1 1 .8l.8 3.6a1 1 0 0 1-.5 1.1L9.2 8.6a13.5 13.5 0 0 0 6.2 6.2l1.1-1.7a1 1 0 0 1 1.1-.5l3.6.8a1 1 0 0 1 .8 1v3a2 2 0 0 1-2.2 2A18.6 18.6 0 0 1 2.6 4.2 2 2 0 0 1 4.6 2h2Z'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   6. Header — the floating pill overlapped the H1 by 41px on quote / faq /
+   downloads, clipping the eyebrow off the top of the hero entirely.
+   -------------------------------------------------------------------------- */
+@media (min-width: 992px) {
+    body[data-page] .detail-hero-grid,
+    body[data-page] .hero-grid {
+        padding-top: 172px;
+    }
+}
+
+@media (max-width: 991px) {
+    body[data-page] .detail-hero-grid,
+    body[data-page] .hero-grid {
+        padding-top: 150px;
+    }
+}
+
+@media (max-width: 620px) {
+    body[data-page] .detail-hero-grid,
+    body[data-page] .hero-grid {
+        padding-top: 128px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   7. Hero bands — heroes are always dark; they sit on cockpit imagery
+   -------------------------------------------------------------------------- */
+.hero,
+.detail-hero {
+    --s-text: #E9EEF3;
+    --s-muted: #C3CFDA;
+    --s-heading: #FFFFFF;
+    --s-accent: #FF7A6D;
+    --s-line: rgba(255, 255, 255, .18);
+    --s-line-strong: rgba(255, 255, 255, .3);
+    --s-panel: rgba(255, 255, 255, .1);
+    --s-chip-bg: rgba(255, 255, 255, .12);
+    color: var(--s-text);
+}
+
+.hero h1, .detail-hero h1 { color: var(--s-heading); }
+.hero .lead, .detail-hero .lead { color: var(--s-muted); }
+.hero .eyebrow, .detail-hero .eyebrow { color: var(--s-accent); }
+
+/* Hero chips sit on photography, so a translucent WHITE fill is not safe —
+   over a bright patch of cockpit glass it collapses toward white-on-white.
+   A mostly-opaque DARK fill is deterministic: the composite is #414548 at
+   worst (over pure white) and #0B1219 at best, giving white 8.5:1 - 18.8:1. */
+.hero .chip, .detail-hero .chip {
+    color: #FFFFFF;
+    background-color: rgba(11, 18, 25, .78);
+    border-color: rgba(255, 255, 255, .34);
+}
+
+.hero .chip-accent, .detail-hero .chip-accent {
+    color: #FFC9C3;                              /* 7.4:1 on the same fill */
+    background-color: rgba(11, 18, 25, .78);
+    border-color: #FFC9C3;
+}
+
+.hero .spec-strip strong, .detail-hero .spec-strip strong { color: #FFFFFF; }
+.hero .spec-strip span, .detail-hero .spec-strip span { color: #C3CFDA; }
+.hero .image-note, .detail-hero .image-note { color: #DCE4EB; }
+
+/* --------------------------------------------------------------------------
+   8. Accessibility
+   -------------------------------------------------------------------------- */
+:focus-visible {
+    outline: 3px solid #FF7A6D;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.surface-light :focus-visible {
+    outline-color: #A32017;
+}
+
+/* WCAG 2.2 AA (2.5.8) — footer/legal links were under 24x24px. */
+footer .footer-links a,
+footer .footer-bottom-links a,
+footer .avicore-contact-links a,
+.sitemap-list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   9. Light panels inherited from the template
+   --------------------------------------------------------------------------
+   These 24 selectors are every text-bearing element in styles.css whose own
+   background computes lighter than 55% luminance (extracted from the
+   stylesheet rather than hand-listed). They can appear inside either band, so
+   each re-points the tokens to the light set for its own subtree. Without
+   this, a white-on-dark token paints onto a #F4F4F5 card.
+   -------------------------------------------------------------------------- */
+.accordion-asked .accordion-asked-item,
+.accordion-faq_item,
+.benefits-box,
+.benefits-step-inner .step-item,
+.box-contact-item,
+.box-white,
+.canvas-body,
+.featured-works-item,
+.features-item,
+.form-contact,
+.nice-select .list,
+.pricing-item,
+.process-card,
+.section-about-us .box-quotes,
+.section-about-us .mission-box,
+.section-about-us .review-box,
+.section-hero .content-wrap .sub,
+.section-hero .scroll-more,
+.section-services-single .top-image,
+.section-work-single .wrap-image,
+.sub-menu,
+.tf-social-1 a,
+.wg-map,
+.wg-service-2 .image-simu {
+    --s-bg: #F4F4F5;
+    --s-raised: #FFFFFF;
+    --s-text: #1A222B;
+    --s-muted: #586674;
+    --s-heading: #0C131A;
+    --s-accent: #C0281F;
+    --s-cyan: #0B6E8F;
+    --s-line: rgba(11, 18, 25, .12);
+    --s-panel: rgba(11, 18, 25, .04);
+    --s-chip-bg: rgba(11, 18, 25, .05);
+    color: var(--s-text);
+}
+
+.accordion-asked .accordion-asked-item :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.accordion-faq_item :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.benefits-box :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.benefits-step-inner .step-item :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.box-contact-item :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.box-white :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.canvas-body :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.featured-works-item :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.features-item :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.form-contact :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.nice-select .list :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.pricing-item :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.process-card :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.section-about-us .box-quotes :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.section-about-us .mission-box :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.section-about-us .review-box :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.section-hero .content-wrap .sub :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.section-hero .scroll-more :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.section-services-single .top-image :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.section-work-single .wrap-image :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.sub-menu :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.tf-social-1 a :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.wg-map :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong),
+.wg-service-2 .image-simu :where(h1,h2,h3,h4,h5,h6,p,li,span,div,a,label,strong) {
+    color: var(--s-text);
+}
+
+
+/* The template pairs these classes with a container selector, e.g.
+   .features-item .text {color:#71717A} at (0,2,0), which outranks the
+   generated rule above. Match that weight and route them through the token. */
+.accordion-asked .accordion-asked-item :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.accordion-faq_item :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.benefits-box :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.benefits-step-inner .step-item :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.box-contact-item :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.box-white :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.canvas-body :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.featured-works-item :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.features-item :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.form-contact :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.nice-select .list :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.pricing-item :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.process-card :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.section-about-us .box-quotes :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.section-about-us .mission-box :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.section-about-us .review-box :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.section-hero .content-wrap .sub :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.section-hero .scroll-more :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.section-services-single .top-image :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.section-work-single .wrap-image :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.sub-menu :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.tf-social-1 a :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.wg-map :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400),
+.wg-service-2 .image-simu :where(.text,.title,.heading,.desc,.sub,.text-body-1,.text-body-2,.text-body-3,.num,.text-secondary,.text-neutral-200,.text-neutral-300,.text-neutral-400) {
+    color: var(--s-text) !important;
+}
+
+/* --------------------------------------------------------------------------
+   10. Button labels win over every band and panel rule
+   --------------------------------------------------------------------------
+   The primary button carries its own fill, so its label must never be re-inked
+   by a surrounding band or by one of the light-panel scopes in section 9.
+   Doubling the class keeps this at (0,2,0)+ so it outranks the container-
+   qualified template selectors those rules had to match.
+   -------------------------------------------------------------------------- */
+.tf-btn.tf-btn,
+.tf-btn.tf-btn *,
+.btn-primary.btn-primary,
+.btn-primary.btn-primary * {
+    color: var(--acc-btn-label) !important;
+}
+
+.tf-btn-2.tf-btn-2,
+.tf-btn-2.tf-btn-2 * {
+    color: var(--s-text) !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. Aircraft browse grid
+   --------------------------------------------------------------------------
+   A second way into the catalogue: by the cockpit being recreated rather than
+   by component type. Buyers arrive knowing their aircraft, not knowing whether
+   they need a "bezel" or a "panel".
+   -------------------------------------------------------------------------- */
+.aircraft-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.aircraft-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--s-line);
+    border-radius: 18px;
+    background: var(--s-raised);
+    box-shadow: var(--s-shadow);
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.aircraft-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--acc-btn);
+}
+
+.aircraft-media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--s-panel);
+}
+
+.aircraft-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.aircraft-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 22px 22px 24px;
+}
+
+.aircraft-body h3 {
+    margin: 0;
+    color: var(--s-heading);
+    font-size: 21px;
+    letter-spacing: -.02em;
+}
+
+.aircraft-body p {
+    flex: 1;
+    margin: 0;
+    color: var(--s-muted);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.aircraft-body .card-kicker {
+    color: var(--s-accent);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.aircraft-body .text-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    margin-top: 6px;
+    color: var(--s-accent);
+    font-weight: 700;
+}
+
+@media (max-width: 575px) {
+    .aircraft-grid { grid-template-columns: 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   12. AviCore / FSDC split
+   --------------------------------------------------------------------------
+   AviCore is the compact end of the business; full-motion programmes belong to
+   the parent company. These styles carry the side-by-side comparison on
+   enterprise.html and the hand-off band used on the larger audience pages.
+   -------------------------------------------------------------------------- */
+.split-compare {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.compare-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 30px 28px 32px;
+    border: 1px solid var(--s-line);
+    border-radius: 20px;
+    background: var(--s-raised);
+    box-shadow: var(--s-shadow);
+}
+
+.compare-card--avicore { border-top: 3px solid var(--acc-btn); }
+.compare-card--fsdc { border-top: 3px solid var(--s-cyan); }
+
+.compare-card h3 {
+    margin: 0;
+    color: var(--s-heading);
+    font-size: 25px;
+    letter-spacing: -.02em;
+}
+
+.compare-card .compare-lead {
+    margin: 0;
+    color: var(--s-muted);
+    font-size: 15.5px;
+}
+
+.compare-card .list-check { flex: 1; margin: 4px 0 0; }
+
+.compare-meta {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding-top: 16px;
+    border-top: 1px solid var(--s-line);
+}
+
+.compare-meta div { display: flex; flex-direction: column; gap: 2px; }
+.compare-meta strong { color: var(--s-heading); font-size: 16px; }
+.compare-meta span { color: var(--s-muted); font-size: 12.5px; }
+
+.compare-card .btn { align-self: flex-start; margin-top: 4px; }
+
+/* --- hand-off band ------------------------------------------------------- */
+.enterprise-handoff {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 26px;
+    flex-wrap: wrap;
+    padding: 26px 30px;
+    border: 1px solid var(--s-line);
+    border-left: 3px solid var(--s-cyan);
+    border-radius: 16px;
+    background: var(--s-raised);
+}
+
+.enterprise-handoff .card-kicker { color: var(--s-cyan); }
+
+.enterprise-handoff h3 {
+    margin: 4px 0 6px;
+    color: var(--s-heading);
+    font-size: 21px;
+    letter-spacing: -.02em;
+}
+
+.enterprise-handoff p {
+    max-width: 62ch;
+    margin: 0;
+    color: var(--s-muted);
+    font-size: 15px;
+}
+
+.enterprise-handoff .button-row { flex-shrink: 0; }
+
+@media (max-width: 700px) {
+    .enterprise-handoff { padding: 22px; }
+    .enterprise-handoff .btn { width: 100%; justify-content: center; }
+}
+
+/* --------------------------------------------------------------------------
+   13. Header pill sizing
+   --------------------------------------------------------------------------
+   The template caps .header-inner at 739px (807px on header2) — a width built
+   for the original 6-item nav. AviCore now runs 8 items plus a CTA, and the
+   nav was overflowing its own container at every breakpoint including 1440px
+   (measured: scrollWidth 605 vs clientWidth 556).
+
+   The pill keeps its shape; it just sizes to its contents instead of a fixed
+   cap, and tightens the gap on narrower desktops. Mobile is untouched — the
+   nav is hidden there and the hamburger takes over.
+   -------------------------------------------------------------------------- */
+@media (min-width: 992px) {
+    .tf-header .header-inner,
+    .tf-header.header2 .header-inner {
+        width: fit-content;
+        max-width: calc(100% - 48px);
+        gap: 18px;
+    }
+
+    .tf-header .logo-site.avicore-logo,
+    .tf-header .header-inner > .tf-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .tf-header .nav-menu-main {
+        flex-wrap: nowrap;
+        gap: 18px;
+    }
+
+    .tf-header .nav-menu-main > .menu-item > .item-link {
+        white-space: nowrap;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1240px) {
+    .tf-header .header-inner,
+    .tf-header.header2 .header-inner { gap: 13px; }
+    .tf-header .nav-menu-main { gap: 13px; }
+    .tf-header .nav-menu-main > .menu-item > .item-link { font-size: 14.5px; }
+}
+
+/* --------------------------------------------------------------------------
+   14. Media inside cards, and the FSDC photo strip
+   -------------------------------------------------------------------------- */
+.info-card.has-media,
+.callout.has-media {
+    overflow: hidden;
+    padding-top: 0;
+}
+
+.card-media {
+    margin: -1px -1px 18px;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--s-panel);
+}
+
+.card-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fsdc-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.fsdc-strip figure {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--s-line);
+    border-radius: 16px;
+    background: var(--s-raised);
+}
+
+.fsdc-strip img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+}
+
+.fsdc-strip figcaption {
+    padding: 12px 16px 14px;
+    color: var(--s-muted);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+/* Product renders are transparent cutouts, so the stage must not paint a
+   light plate behind them on a dark band. */
+.product-stage picture img,
+.product-media picture img,
+.product-media img {
+    background: transparent;
+}
+
+/* storefront.css sets .callout-grid to `minmax(0,1fr) auto` — a text+aside
+   layout. On enterprise.html the grid holds two equal product-family cards,
+   so the `auto` column collapsed one image to 2px while the other overflowed.
+   Where the children carry media, make the columns equal. */
+.callout-grid:has(.callout.has-media) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    align-items: stretch;
+}
+
+.callout.has-media {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: 0 0 26px;
+}
+
+.callout.has-media .card-media {
+    width: 100%;
+    margin: 0 0 20px;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius, 20px) var(--radius, 20px) 0 0;
+}
+
+.callout.has-media > :not(.card-media) {
+    padding-inline: 26px;
+}
+
+.callout.has-media h3 {
+    margin: 0 0 8px;
+    color: var(--s-heading);
+}
+
+.callout.has-media p { margin: 0; color: var(--s-muted); }
+
+/* --------------------------------------------------------------------------
+   15. Responsive image containers
+   --------------------------------------------------------------------------
+   Images now come from mixed sources — 1200x1200 transparent product cutouts,
+   1400x933 photography, and FSDC stills at assorted ratios. Without a declared
+   box each slot inherits the intrinsic ratio of whatever lands in it, so rows
+   of cards stop lining up. Every media container declares its own aspect and
+   crops to fill; the cutouts are contained instead, so nothing is sliced.
+   -------------------------------------------------------------------------- */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* photographic slots — crop to the box */
+.product-media,
+.aircraft-media,
+.card-media,
+.audience-stage,
+.hero-art,
+.featured-works-item .image,
+.blog-item .image,
+.wg-service-2 .image-simu {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.product-media > picture,
+.aircraft-media > picture,
+.card-media > picture,
+.audience-stage > picture,
+.hero-art > picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.product-media img,
+.aircraft-media img,
+.card-media img,
+.audience-stage img,
+.hero-art img,
+.featured-works-item .image img,
+.blog-item .image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.aircraft-media { aspect-ratio: 16 / 10; }
+.card-media     { aspect-ratio: 16 / 10; }
+.audience-stage { aspect-ratio: 16 / 10; }
+
+/* Transparent product cutouts are objects, not scenes — never crop them, and
+   never letterbox them onto a plate. */
+.product-media,
+.product-stage {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+}
+
+.product-media img[src*="/products/"],
+.product-stage img[src*="/products/"] {
+    width: auto;
+    height: auto;
+    max-width: 86%;
+    max-height: 86%;
+    object-fit: contain;
+    background: transparent;
+}
+
+/* A photo used inside a product stage still fills it. */
+.product-stage img:not([src*="/products/"]) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+}
+
+.fsdc-strip img { aspect-ratio: 3 / 2; object-fit: cover; }
+
+@media (max-width: 767px) {
+    .aircraft-media,
+    .card-media,
+    .audience-stage { aspect-ratio: 3 / 2; }
+
+    .product-media,
+    .product-stage { aspect-ratio: 1 / 1; }
+}
+
+/* Nothing may exceed its column on any viewport. */
+.product-card,
+.aircraft-card,
+.info-card,
+.callout,
+.compare-card,
+.audience-card,
+.process-card {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* The .img-grow-* hub tiles are ~140px product icons. Photographs were being
+   squashed into them by object-fit:fill; cutouts belong here and must never
+   be cropped or stretched. */
+.section-tools .img-grow-1,
+.section-tools .img-grow-2,
+.section-tools .img-grow-3,
+.section-tools .img-grow-4,
+.section-tools .img-grow-5,
+.section-tools .img-grow-6,
+[class*="img-grow-"] {
+    object-fit: contain !important;
+    background: transparent;
+}
